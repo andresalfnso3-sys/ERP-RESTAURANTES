@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ERP Integral de Restaurante</title>
+<style>
+  :root{
+    --navy:#0b2545;
+    --blue:#2563eb;
+    --violet:#7c3aed;
+    --emerald:#059669;
+    --orange:#ea580c;
+    --pink:#db2777;
+    --text:#334155;
+    --muted:#64748b;
+    --bg:#f5f7fa;
+    --card:#ffffff;
+    --border:#e2e8f0;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family: Arial, Helvetica, sans-serif; color:var(--text); background:var(--bg); line-height:1.55;
+  }
+  a{color:var(--blue);}
+  .hero{
+    position:relative; overflow:hidden;
+    background:linear-gradient(120deg,#312e81 0%, #6d28d9 45%, #be185d 100%);
+    color:white; padding:56px 24px 44px; text-align:center;
+  }
+  .hero::before, .hero::after{
+    content:""; position:absolute; border-radius:50%; background:rgba(255,255,255,.08);
+  }
+  .hero::before{ width:220px; height:220px; top:-80px; left:-60px; }
+  .hero::after{ width:280px; height:280px; bottom:-140px; right:-60px; }
+  .hero h1{ font-size:2.1rem; margin:0 0 10px; letter-spacing:.3px; position:relative; }
+  .hero p.sub{ font-size:1.1rem; color:#e9d5ff; margin:0 0 18px; position:relative; }
+  .hero .team{ font-size:.95rem; color:#ede9fe; position:relative; }
+  .hero .team b{ color:white; }
+
+  .modules{
+    display:flex; flex-wrap:wrap; gap:14px; justify-content:center;
+    max-width:1080px; margin:-34px auto 40px; padding:0 20px; position:relative; z-index:2;
+  }
+  .module-card{
+    background:var(--card); border:1px solid var(--border); border-radius:14px;
+    width:150px; padding:16px 10px; text-align:center; box-shadow:0 6px 18px rgba(15,23,42,.08);
+  }
+  .module-card .ico{
+    width:46px; height:46px; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center;
+  }
+  .module-card .ico svg{ width:24px; height:24px; }
+  .module-card .name{ font-size:.82rem; font-weight:bold; color:var(--navy); }
+
+  main{ max-width:980px; margin:0 auto; padding:0 20px 60px; }
+
+  section{ margin-bottom:52px; }
+  .sec-head{ display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+  .sec-badge{
+    width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    color:white; flex:none;
+  }
+  .sec-badge svg{ width:18px; height:18px; }
+  .sec-head h2{ margin:0; font-size:1.35rem; color:var(--navy); }
+  .sec-underline{ height:4px; width:70px; border-radius:2px; margin:6px 0 0 46px; }
+
+  .card{ background:var(--card); border:1px solid var(--border); border-radius:14px; padding:22px 26px; box-shadow:0 4px 14px rgba(15,23,42,.05); }
+
+  table{ width:100%; border-collapse:collapse; margin:14px 0; font-size:.92rem; }
+  th{ text-align:left; padding:10px 12px; color:white; font-size:.85rem; }
+  td{ padding:10px 12px; border-bottom:1px solid var(--border); vertical-align:top; }
+  tr:last-child td{ border-bottom:none; }
+  tr:nth-child(even) td{ background:#fafbfc; }
+
+  .badge{ display:inline-block; padding:3px 10px; border-radius:999px; font-size:.75rem; font-weight:bold; color:white; }
+  .badge.alta{ background:#ef4444; }
+  .badge.media{ background:#f59e0b; }
+  .badge.baja{ background:#10b981; }
+
+  .two-col{ display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  @media (max-width:720px){ .two-col{ grid-template-columns:1fr; } }
+
+  .pillbox{ display:flex; flex-direction:column; gap:10px; }
+  .pillbox .row{ display:flex; align-items:flex-start; gap:10px; background:#fafbfc; border:1px solid var(--border); border-radius:10px; padding:12px 14px; }
+  .pillbox .row .dot{ width:10px; height:10px; border-radius:50%; margin-top:6px; flex:none; }
+
+  .tree{ font-size:.92rem; }
+  .tree ul{ list-style:none; margin:4px 0 4px 18px; padding-left:14px; border-left:2px dashed var(--border); }
+  .tree > ul{ margin-left:0; padding-left:0; border-left:none; }
+  .tree li{ margin:6px 0; }
+  .tree b{ color:var(--navy); }
+
+  .links-grid{ display:flex; flex-wrap:wrap; gap:14px; }
+  .link-card{ flex:1 1 260px; background:#fafbfc; border:1px solid var(--border); border-radius:12px; padding:16px 18px; }
+  .link-card .label{ font-size:.78rem; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); font-weight:bold; }
+  .link-card a{ word-break:break-all; font-weight:bold; }
+  .members{ margin-top:16px; display:flex; flex-wrap:wrap; gap:8px; }
+  .member{ background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; padding:5px 12px; border-radius:999px; font-size:.85rem; font-weight:600; }
+
+  footer{ background:linear-gradient(90deg,#312e81, #6d28d9 50%, #be185d); color:#ede9fe; text-align:center; padding:26px 20px; font-size:.85rem; }
+  footer b{ color:white; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <h1>ERP Integral de Restaurante</h1>
+  <p class="sub">Food Costing, CRM y Reservas</p>
+  <p class="team">Universidad Manuela Beltrán · Ingeniería de Software · Arquitectura de Software · Bogotá, 2026<br>
+  <b>Equipo:</b> David Alejandro García Lozano · Diego Alejandro López Castillo · Juan Sebastián Rubio Gonzales · Julian Andrés Peñuela Alfonso · Carlos Eduardo Mujica Reyes</p>
+</header>
+
+<div class="modules">
+  <div class="module-card">
+    <div class="ico" style="background:#dbeafe;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>
+    </div>
+    <div class="name">Inventario / Almacén</div>
+  </div>
+  <div class="module-card">
+    <div class="ico" style="background:#ffedd5;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.6 12.4A2 2 0 0 0 9.5 17h8a2 2 0 0 0 2-1.6L21 7H6"/></svg>
+    </div>
+    <div class="name">Compras / Proveedores</div>
+  </div>
+  <div class="module-card">
+    <div class="ico" style="background:#d1fae5;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 12h18"/></svg>
+    </div>
+    <div class="name">Facturación / POS</div>
+  </div>
+  <div class="module-card">
+    <div class="ico" style="background:#f3e8ff;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17.5" cy="9" r="2.4"/><path d="M15.7 14.2c2.4.3 4.3 2.4 4.3 5"/></svg>
+    </div>
+    <div class="name">RRHH</div>
+  </div>
+  <div class="module-card">
+    <div class="ico" style="background:#fef3c7;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10a6 6 0 0 1 12 0c0 2-1 3-1 5H7c0-2-1-3-1-5z"/><path d="M6 19h12"/><path d="M9 15v4M15 15v4"/></svg>
+    </div>
+    <div class="name">Food Costing</div>
+  </div>
+  <div class="module-card">
+    <div class="ico" style="background:#fce7f3;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#db2777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 8.6c0 5.6-8.8 10.4-8.8 10.4S3.2 14.2 3.2 8.6a4.6 4.6 0 0 1 8.8-1.9 4.6 4.6 0 0 1 8.8 1.9z"/></svg>
+    </div>
+    <div class="name">CRM / Clientes</div>
+  </div>
+</div>
+
+<main>
+
+<section id="contexto">
+  <div class="sec-head">
+    <div class="sec-badge" style="background:var(--blue);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    </div>
+    <h2>1. Contexto y evaluación del proyecto</h2>
+  </div>
+  <div class="sec-underline" style="background:var(--blue);"></div>
+
+  <div class="card">
+    <p>El proyecto se enfoca en el desarrollo de un ERP integral para un restaurante pequeño o mediano que ofrece atención en mesa y gestiona diferentes procesos operativos, administrativos y comerciales.</p>
+    <p>Actualmente, un restaurante debe coordinar actividades como el control de inventario, las compras a proveedores, las ventas, la facturación, la gestión de empleados y la atención de los clientes. Estos procesos se encuentran relacionados entre sí, por lo que una gestión independiente puede dificultar el acceso a información actualizada y la toma de decisiones.</p>
+    <p>La propuesta consiste en desarrollar un sistema ERP que centralice estos procesos y permita relacionar la información generada por cada uno de sus módulos. Los dos elementos que complementan la gestión tradicional del restaurante son <b>Food Costing</b> y <b>CRM</b>, ya que permiten relacionar la operación del negocio con el control de costos, la rentabilidad de los platos y la gestión de los clientes.</p>
+
+    <div class="two-col" style="margin-top:18px;">
+      <div class="pillbox">
+        <b style="color:#059669;">VENTAJAS</b>
+        <div class="row"><div class="dot" style="background:#10b981;"></div>Centralización de la información</div>
+        <div class="row"><div class="dot" style="background:#10b981;"></div>Integración entre los diferentes procesos</div>
+        <div class="row"><div class="dot" style="background:#10b981;"></div>Mejor control del inventario</div>
+        <div class="row"><div class="dot" style="background:#10b981;"></div>Cálculo del costo real de los platos</div>
+        <div class="row"><div class="dot" style="background:#10b981;"></div>Identificación de cambios en los márgenes de ganancia</div>
+        <div class="row"><div class="dot" style="background:#10b981;"></div>Mejor gestión de clientes y reservas</div>
+        <div class="row"><div class="dot" style="background:#10b981;"></div>Reducción de tareas manuales</div>
+        <div class="row"><div class="dot" style="background:#10b981;"></div>Apoyo para la toma de decisiones</div>
+        <div class="row"><div class="dot" style="background:#10b981;"></div>Mejor control de compras y proveedores</div>
+        <div class="row"><div class="dot" style="background:#10b981;"></div>Mayor visibilidad sobre la operación del restaurante</div>
+      </div>
+      <div class="pillbox">
+        <b style="color:#c1440e;">DESVENTAJAS</b>
+        <div class="row"><div class="dot" style="background:#ef4444;"></div>Costos de desarrollo e implementación</div>
+        <div class="row"><div class="dot" style="background:#ef4444;"></div>Necesidad de capacitación del personal</div>
+        <div class="row"><div class="dot" style="background:#ef4444;"></div>Posible resistencia al cambio</div>
+        <div class="row"><div class="dot" style="background:#ef4444;"></div>Necesidad de mantenimiento y actualización</div>
+        <div class="row"><div class="dot" style="background:#ef4444;"></div>Dependencia de la infraestructura tecnológica</div>
+        <div class="row"><div class="dot" style="background:#ef4444;"></div>Complejidad de integrar diferentes módulos</div>
+        <div class="row"><div class="dot" style="background:#ef4444;"></div>Tiempo necesario para la adaptación de los usuarios</div>
+      </div>
+    </div>
+
+    <p style="margin-top:18px;"><b>Justificación / conclusión del comparativo:</b> el análisis de soluciones ERP existentes para restaurantes permitió identificar que herramientas como Toast, Lightspeed Restaurant y Oracle MICROS Simphony integran diferentes procesos relacionados con ventas, inventario, compras y gestión de clientes. A partir de este comparativo se considera válido desarrollar la propuesta de un ERP para un restaurante pequeño o mediano, ya que el proyecto busca aplicar estas funcionalidades en una solución de alcance controlado.</p>
+  </div>
+</section>
+
+<section id="definicion">
+  <div class="sec-head">
+    <div class="sec-badge" style="background:var(--violet);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    </div>
+    <h2>2. Definición general del proyecto</h2>
+  </div>
+  <div class="sec-underline" style="background:var(--violet);"></div>
+
+  <div class="card">
+    <p><b>A. Definición del problema.</b> Los restaurantes deben gestionar procesos como inventario, compras, ventas, recursos humanos y atención al cliente. Cuando estos procesos se manejan de forma independiente, la información puede quedar fragmentada, dificultando el control de las operaciones y la toma de decisiones. Además, existe la necesidad de conocer el costo real de los platos y cómo las variaciones en los precios de los proveedores afectan su margen de ganancia. <b>Problema principal:</b> falta de integración entre la operación del restaurante, el control de costos y la gestión de clientes.</p>
+
+    <p><b>B. Solución ofrecida.</b> Se propone desarrollar un ERP integral que centralice e integre sus principales procesos mediante los módulos de Inventario/Almacén, Compras/Proveedores, Facturación/Ventas (POS), Recursos Humanos, Food Costing y CRM/Clientes. El producto esperado es una plataforma ERP centralizada que facilite la gestión del restaurante y apoye la toma de decisiones.</p>
+
+    <p><b>C. Justificación.</b> La implementación se justifica por el impacto directo en la rentabilidad del negocio: al centralizar la información —incluyendo Food Costing—, el restaurante puede identificar con precisión qué insumos se desperdician más, qué platos generan mayor margen y en qué momentos se concentran las ventas.</p>
+
+    <p><b>D. Usuario final:</b></p>
+    <div class="pillbox">
+      <div class="row"><div class="dot" style="background:#7c3aed;"></div><span><b>Administradores/dueños:</b> reportes financieros, rentabilidad por plato y desempeño general.</span></div>
+      <div class="row"><div class="dot" style="background:#7c3aed;"></div><span><b>Personal de cocina:</b> inventario de insumos, fichas técnicas y pedidos en tiempo real.</span></div>
+      <div class="row"><div class="dot" style="background:#7c3aed;"></div><span><b>Meseros y caja:</b> registrar pedidos, procesar pagos y generar facturas.</span></div>
+      <div class="row"><div class="dot" style="background:#7c3aed;"></div><span><b>Personal de compras:</b> gestionar proveedores y órdenes de reabastecimiento.</span></div>
+      <div class="row"><div class="dot" style="background:#7c3aed;"></div><span><b>Clientes:</b> reservar mesa en línea y acumular puntos de fidelización.</span></div>
+    </div>
+
+    <p style="margin-top:14px;"><b>E. Utilidad (retorno de inversión):</b></p>
+    <ol>
+      <li><b>Reducción de desperdicio:</b> 15-20% menos pérdidas de alimentos con alertas de stock/vencimiento.</li>
+      <li><b>Tiempo operativo:</b> POS automatizado atiende más mesas por turno.</li>
+      <li><b>Rentabilidad por plato:</b> Food Costing ajusta menú y precios según costo real.</li>
+      <li><b>Mejor toma de decisiones:</b> reportes en tiempo real evitan sobrecompra.</li>
+      <li><b>Fidelización:</b> CRM (reservas + puntos) mejora retención y recomendación.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="espacio">
+  <div class="sec-head">
+    <div class="sec-badge" style="background:var(--emerald);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1.5-1.5"/></svg>
+    </div>
+    <h2>3. Espacio de trabajo</h2>
+  </div>
+  <div class="sec-underline" style="background:var(--emerald);"></div>
+
+  <div class="card">
+    <div class="links-grid">
+      <div class="link-card">
+        <div class="label">Repositorio</div>
+        <a href="https://github.com/andresalfnso3-sys/ERP-RESTAURANTES" target="_blank">github.com/andresalfnso3-sys/ERP-RESTAURANTES</a>
+      </div>
+      <div class="link-card">
+        <div class="label">Documentación (esta página)</div>
+        <a href="https://andresalfnso3-sys.github.io/ERP-RESTAURANTES/" target="_blank">andresalfnso3-sys.github.io/ERP-RESTAURANTES</a>
+      </div>
+    </div>
+    <div class="label" style="margin-top:18px;">Miembros vinculados al repositorio</div>
+    <div class="members">
+      <span class="member">David Alejandro García Lozano</span>
+      <span class="member">Diego Alejandro López Castillo</span>
+      <span class="member">Juan Sebastián Rubio Gonzales</span>
+      <span class="member">Julian Andrés Peñuela Alfonso</span>
+      <span class="member">Carlos Eduardo Mujica Reyes</span>
+    </div>
+  </div>
+</section>
+
+<section id="requisitos">
+  <div class="sec-head">
+    <div class="sec-badge" style="background:var(--orange);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    </div>
+    <h2>4. Especificación de requerimientos</h2>
+  </div>
+  <div class="sec-underline" style="background:var(--orange);"></div>
+
+  <div class="card">
+    <h3 style="color:var(--navy);">A. Antecedentes</h3>
+    <table>
+      <tr style="background:var(--orange);">
+        <th>Aplicación</th><th>Costo</th><th>Proveedores</th><th>RRHH</th><th>Inventario</th><th>Facturación</th><th>CRM</th>
+      </tr>
+      <tr><td>Toast POS</td><td>Desde $69/mes</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr>
+      <tr><td>Square for Restaurants</td><td>Gratis / desde $60/mes</td><td>Parcial</td><td>—</td><td>✔</td><td>✔</td><td>✔</td></tr>
+      <tr><td>SoftRestaurant</td><td>Desde $50/mes</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td><td>Parcial</td></tr>
+    </table>
+
+    <h3 style="color:var(--navy); margin-top:28px;">B. Requisitos funcionales</h3>
+    <table>
+      <tr style="background:var(--orange);">
+        <th>Código</th><th>Descripción</th><th>Módulo</th><th>Prioridad</th>
+      </tr>
+      <tr><td>RF-01</td><td>Descontar automáticamente los insumos del inventario según la receta al registrar una venta</td><td>Inventario / Food Costing</td><td><span class="badge alta">Alta</span></td></tr>
+      <tr><td>RF-02</td><td>Notificar alertas de stock mínimo e insumos próximos a vencer</td><td>Inventario</td><td><span class="badge media">Media</span></td></tr>
+      <tr><td>RF-03</td><td>Generar y gestionar órdenes de compra a proveedores, comparando precios</td><td>Compras/Proveedores</td><td><span class="badge media">Media</span></td></tr>
+      <tr><td>RF-04</td><td>Registrar pedidos en mesa y enviarlos automáticamente a cocina</td><td>Facturación/Ventas (POS)</td><td><span class="badge alta">Alta</span></td></tr>
+      <tr><td>RF-05</td><td>Generar factura o ticket con distintos métodos de pago</td><td>Facturación/Ventas (POS)</td><td><span class="badge alta">Alta</span></td></tr>
+      <tr><td>RF-06</td><td>Registrar la ficha técnica (receta e insumos) de cada plato del menú</td><td>Food Costing</td><td><span class="badge alta">Alta</span></td></tr>
+      <tr><td>RF-07</td><td>Calcular el costo y la rentabilidad de cada plato, con alertas por variación de precio</td><td>Food Costing</td><td><span class="badge alta">Alta</span></td></tr>
+      <tr><td>RF-08</td><td>Gestionar turnos, horarios y asistencia del personal</td><td>RRHH</td><td><span class="badge media">Media</span></td></tr>
+      <tr><td>RF-09</td><td>Permitir a los clientes reservar mesa en línea y confirmar/cancelar la reserva</td><td>CRM/Clientes</td><td><span class="badge media">Media</span></td></tr>
+      <tr><td>RF-10</td><td>Registrar el historial de pedidos por cliente y acumular puntos de fidelización</td><td>CRM/Clientes</td><td><span class="badge media">Media</span></td></tr>
+    </table>
+
+    <h3 style="color:var(--navy); margin-top:28px;">Árbol de descomposición funcional</h3>
+    <div class="tree">
+      <ul>
+        <li><b>ERP Restaurante (raíz)</b>
+          <ul>
+            <li><b>1. Gestión de Inventario</b>
+              <ul>
+                <li>1.1 Control de stock
+                  <ul><li>1.1.1 Registrar entradas de insumos</li><li>1.1.2 Descontar stock automáticamente por venta</li></ul>
+                </li>
+                <li>1.2 Alertas de inventario
+                  <ul><li>1.2.1 Notificar insumos próximos a vencer</li><li>1.2.2 Notificar stock mínimo</li></ul>
+                </li>
+              </ul>
+            </li>
+            <li><b>2. Compras/Proveedores</b>
+              <ul>
+                <li>2.1 Registro de proveedores
+                  <ul><li>2.1.1 Alta/baja de proveedores</li><li>2.1.2 Historial de compras por proveedor</li></ul>
+                </li>
+                <li>2.2 Órdenes de compra
+                  <ul><li>2.2.1 Generar orden de compra</li><li>2.2.2 Comparar precios entre proveedores</li></ul>
+                </li>
+              </ul>
+            </li>
+            <li><b>3. Facturación/Ventas (POS)</b>
+              <ul>
+                <li>3.1 Registro de pedidos
+                  <ul><li>3.1.1 Tomar orden en mesa</li><li>3.1.2 Enviar orden a cocina</li></ul>
+                </li>
+                <li>3.2 Facturación
+                  <ul><li>3.2.1 Generar factura/ticket</li><li>3.2.2 Registrar método de pago</li></ul>
+                </li>
+              </ul>
+            </li>
+            <li><b>4. Food Costing</b>
+              <ul>
+                <li>4.1 Fichas técnicas
+                  <ul><li>4.1.1 Registrar receta e insumos por plato</li><li>4.1.2 Calcular costo por plato</li></ul>
+                </li>
+                <li>4.2 Control de margen
+                  <ul><li>4.2.1 Alertar variación de costo de insumos</li><li>4.2.2 Calcular rentabilidad por plato</li></ul>
+                </li>
+              </ul>
+            </li>
+            <li><b>5. RRHH</b>
+              <ul>
+                <li>5.1 Gestión de turnos
+                  <ul><li>5.1.1 Asignar horarios</li><li>5.1.2 Control de asistencia</li></ul>
+                </li>
+                <li>5.2 Nómina básica
+                  <ul><li>5.2.1 Cálculo de pago por turno</li><li>5.2.2 Reporte de horas trabajadas</li></ul>
+                </li>
+              </ul>
+            </li>
+            <li><b>6. CRM/Clientes</b>
+              <ul>
+                <li>6.1 Reservas
+                  <ul><li>6.1.1 Reservar mesa en línea</li><li>6.1.2 Confirmar/cancelar reserva</li></ul>
+                </li>
+                <li>6.2 Fidelización
+                  <ul><li>6.2.1 Registrar historial de pedidos por cliente</li><li>6.2.2 Acumular puntos/descuentos</li><li>6.2.3 Encuestas de satisfacción</li></ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <h3 style="color:var(--navy); margin-top:28px;">C. Requisitos no funcionales</h3>
+    <p><b>Nombre, logo y paleta de colores:</b> opciones evaluadas — SaborERP, GastroCore, ChefSuite, MesaPro, PlatoON. Paleta sugerida: naranja/rojo terracota (energía, apetito), crema/beige de fondo, verde oscuro o marrón de acento. Logo: ícono simple (plato, cubiertos o llama) con tipografía redondeada.</p>
+    <table>
+      <tr style="background:var(--orange);">
+        <th>Código</th><th>Requisito</th><th>Justificación</th>
+      </tr>
+      <tr><td>RNF-01</td><td>Identidad visual (nombre, logo, paleta)</td><td>Refuerza el reconocimiento de marca y el profesionalismo del ERP como producto propio.</td></tr>
+      <tr><td>RNF-02</td><td>Usabilidad / interfaz intuitiva</td><td>Meseros y cocina no tienen formación técnica y deben operar rápido bajo presión.</td></tr>
+      <tr><td>RNF-03</td><td>Tiempo de respuesta rápido en el POS</td><td>En horas pico cualquier demora genera filas y afecta la experiencia del cliente.</td></tr>
+      <tr><td>RNF-04</td><td>Alta disponibilidad</td><td>El sistema no puede caerse durante el servicio, detendría las ventas.</td></tr>
+      <tr><td>RNF-05</td><td>Seguridad de datos de clientes</td><td>El CRM maneja información personal que debe protegerse.</td></tr>
+      <tr><td>RNF-06</td><td>Escalabilidad</td><td>Debe adaptarse si el restaurante crece o abre sucursales.</td></tr>
+    </table>
+
+    <h3 style="color:var(--navy); margin-top:28px;">D. Alcances del sistema</h3>
+    <p><b>Alcance:</b> seis módulos integrados para una sola sede. No incluye multisucursal, integración con apps de delivery (Uber Eats, Rappi) ni contabilidad fiscal avanzada — quedan como trabajo futuro.</p>
+    <p><b>Tiempo:</b> desarrollo por fases dentro del semestre: fase 1 inventario + POS, fase 2 food costing, fase 3 CRM/reservas y RRHH.</p>
+    <p><b>Costo:</b> desarrollo propio, sin licencia comercial; el costo principal es el tiempo del equipo, usando herramientas y librerías open source.</p>
+  </div>
+</section>
+
+<section id="tecnologias">
+  <div class="sec-head">
+    <div class="sec-badge" style="background:var(--pink);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg>
+    </div>
+    <h2>E. Tecnologías seleccionadas</h2>
+  </div>
+  <div class="sec-underline" style="background:var(--pink);"></div>
+
+  <div class="card">
+    <table>
+      <tr style="background:var(--pink);"><th>Capa</th><th>Tecnología</th><th>Función</th></tr>
+      <tr><td>IDE</td><td>Microsoft Visual Studio 2022</td><td>Requerido por el docente</td></tr>
+      <tr><td>Lenguaje / entorno</td><td>C# sobre .NET 8 (LTS)</td><td>Un solo lenguaje en toda la solución</td></tr>
+      <tr><td>Backend</td><td>ASP.NET Core Web API</td><td>Expone los 6 módulos</td></tr>
+      <tr><td>Frontend</td><td>Blazor (Server o WebAssembly)</td><td>App web única para personal y clientes; sin JavaScript</td></tr>
+      <tr><td>Librería UI</td><td>MudBlazor</td><td>Formularios, tablas y gráficos ya construidos</td></tr>
+      <tr><td>Base de datos</td><td>SQL Server Express / LocalDB</td><td>Gratuita, integrada con Visual Studio</td></tr>
+      <tr><td>ORM</td><td>Entity Framework Core</td><td>Esquema versionado junto al código</td></tr>
+      <tr><td>Autenticación</td><td>ASP.NET Core Identity + JWT</td><td>Roles: admin, gerente, mesero, cocina, cajero</td></tr>
+      <tr><td>Tiempo real</td><td>SignalR</td><td>Comandas, estado de mesas, alertas de margen</td></tr>
+      <tr><td>Tareas programadas</td><td>Hangfire</td><td>Recalcula márgenes y envía encuestas</td></tr>
+      <tr><td>PDF</td><td>QuestPDF</td><td>Facturas, comandas y fichas técnicas</td></tr>
+      <tr><td>Notificaciones</td><td>MailKit</td><td>Confirmaciones de reserva y encuestas</td></tr>
+      <tr><td>Gráficos</td><td>LiveCharts2</td><td>Paneles de margen e indicadores CRM</td></tr>
+      <tr><td>Documentación API</td><td>Swagger / Swashbuckle</td><td>Prueba automática de endpoints</td></tr>
+      <tr><td>Logs</td><td>Serilog</td><td>Trazabilidad y depuración</td></tr>
+      <tr><td>Pruebas</td><td>xUnit / NUnit + Moq</td><td>Pruebas unitarias en Visual Studio</td></tr>
+      <tr><td>Hosting</td><td>IIS Express / Azure App Service</td><td>Ejecuta Blazor + API</td></tr>
+      <tr><td>Control de versiones</td><td>Git + GitHub</td><td>Este repositorio</td></tr>
+    </table>
+    <p style="font-size:.85rem; color:var(--muted); font-style:italic; margin-top:10px;">Nota. Todas las tecnologías se implementan dentro de Microsoft Visual Studio 2022 utilizando C# sobre .NET 8 (LTS), conforme al requisito del docente.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <b>ERP Integral de Restaurante</b> — Universidad Manuela Beltrán · Ingeniería de Software · 2026
+</footer>
+
+</body>
+</html>
